@@ -371,14 +371,16 @@ head(catch_wide)</code></pre>
                                 &quot;5/28/1930&quot;),
                        stringsAsFactors = FALSE)
 
-dates_df %&gt;% 
-  separate(date, c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), &quot;/&quot;)</code></pre>
-<pre><code>##   month day year
-## 1     5  24 1930
-## 2     5  25 1930
-## 3     5  26 1930
-## 4     5  27 1930
-## 5     5  28 1930</code></pre>
+dates_sep&lt;-dates_df %&gt;% 
+  separate(date, c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), &quot;/&quot;, remove = F)
+
+head(dates_sep)</code></pre>
+<pre><code>##        date month day year
+## 1 5/24/1930     5  24 1930
+## 2 5/25/1930     5  25 1930
+## 3 5/26/1930     5  26 1930
+## 4 5/27/1930     5  27 1930
+## 5 5/28/1930     5  28 1930</code></pre>
 <pre class="r"><code>cities_df &lt;- data.frame(city = c(&quot;Juneau AK&quot;, 
                                  &quot;Sitka AK&quot;, 
                                  &quot;Anchorage AK&quot;),
@@ -386,15 +388,17 @@ dates_df %&gt;%
 </div>
 <div id="unite" class="section level1">
 <h1>Unite</h1>
-<pre class="r"><code>dates_df %&gt;% 
-  separate(date, c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), &quot;/&quot;) %&gt;% 
-  unite(date, month, day, year, sep = &quot;/&quot;)</code></pre>
-<pre><code>##        date
-## 1 5/24/1930
-## 2 5/25/1930
-## 3 5/26/1930
-## 4 5/27/1930
-## 5 5/28/1930</code></pre>
+<pre class="r"><code>dates_unite&lt;-dates_sep %&gt;% 
+  #separate(date, c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), &quot;/&quot;) %&gt;% 
+  unite(date_iso, year, month, day, sep = &quot;-&quot;)
+
+head(dates_unite)</code></pre>
+<pre><code>##        date  date_iso
+## 1 5/24/1930 1930-5-24
+## 2 5/25/1930 1930-5-25
+## 3 5/26/1930 1930-5-26
+## 4 5/27/1930 1930-5-27
+## 5 5/28/1930 1930-5-28</code></pre>
 </div>
 
 

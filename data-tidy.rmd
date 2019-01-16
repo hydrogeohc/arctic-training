@@ -170,8 +170,12 @@ dates_df <- data.frame(date = c("5/24/1930",
                                 "5/28/1930"),
                        stringsAsFactors = FALSE)
 
-dates_df %>% 
-  separate(date, c("month", "day", "year"), "/")
+dates_sep<-dates_df %>% 
+  separate(date, c("month", "day", "year"), "/", remove = F)
+
+head(dates_sep)
+
+
 
 
 
@@ -194,12 +198,10 @@ cities_df <- data.frame(city = c("Juneau AK",
 
 
 ```{r}
-dates_df %>% 
-  separate(date, c("month", "day", "year"), "/") %>% 
-  unite(date, month, day, year, sep = "/")
+dates_unite<-dates_sep %>% 
+  #separate(date, c("month", "day", "year"), "/") %>% 
+  unite(date_iso, year, month, day, sep = "-")
 
-
-
-
+head(dates_unite)
 ```
 
