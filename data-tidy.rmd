@@ -142,4 +142,64 @@ head(catch_joined)
   
 ```
 
+#Spread
+
+Make a wide dataframe using spread
+
+```{r}
+catch_wide<-catch_clean %>% 
+  filter(Year>1990) %>% 
+  select(-catch_thousands) %>% 
+  spread(key=Year, value = catch )
+
+head(catch_wide)
+
+
+
+```
+
+#Separate
+
+YYYY-MM-DD
+
+```{r}
+dates_df <- data.frame(date = c("5/24/1930",
+                                "5/25/1930",
+                                "5/26/1930",
+                                "5/27/1930",
+                                "5/28/1930"),
+                       stringsAsFactors = FALSE)
+
+dates_df %>% 
+  separate(date, c("month", "day", "year"), "/")
+
+
+
+
+```
+
+```{r}
+cities_df <- data.frame(city = c("Juneau AK", 
+                                 "Sitka AK", 
+                                 "Anchorage AK"),
+                        stringsAsFactors = FALSE)
+
+
+
+```
+
+
+#Unite
+
+
+
+```{r}
+dates_df %>% 
+  separate(date, c("month", "day", "year"), "/") %>% 
+  unite(date, month, day, year, sep = "/")
+
+
+
+
+```
 
