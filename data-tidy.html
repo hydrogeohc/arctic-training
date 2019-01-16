@@ -198,9 +198,9 @@ library(tidyr)</code></pre>
 <div id="data-cleaning" class="section level1">
 <h1>Data Cleaning</h1>
 <p>Read in data file</p>
-<pre class="r"><code>catch&lt;- read.csv(url(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1&quot;, method = &quot;libcurl&quot;),
+<pre class="r"><code>catch_df&lt;- read.csv(url(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1&quot;, method = &quot;libcurl&quot;),
                     stringsAsFactors = FALSE)
-head(catch)</code></pre>
+head(catch_df)</code></pre>
 <pre><code>##   Region Year Chinook Sockeye Coho Pink Chum All notesRegCode
 ## 1    SSE 1886       0       5    0    0    0   5             
 ## 2    SSE 1887       0     155    0    0    0 155             
@@ -210,7 +210,7 @@ head(catch)</code></pre>
 ## 6    SSE 1891       0     274   24    0    0 298</code></pre>
 <p>ctrl+shift+M %&gt;% pipe opearator</p>
 <p><em>Remove marginal sum and note column </em>Move from wide to long format</p>
-<pre class="r"><code>catch_long&lt;-catch %&gt;% 
+<pre class="r"><code>catch_long&lt;-catch_df %&gt;% 
   #negative value remove columns
   select(-All,-notesRegCode) %&gt;% 
   gather(key=&quot;species&quot;,value = &quot;catch&quot;,-Year,-Region)
@@ -223,6 +223,24 @@ head(catch_long)</code></pre>
 ## 4    SSE 1889 Chinook     0
 ## 5    SSE 1890 Chinook     0
 ## 6    SSE 1891 Chinook     0</code></pre>
+<pre class="r"><code>catch_clean&lt;-catch_long %&gt;% 
+  rename(catch_thousands=catch) #%&gt;% 
+  #mutate(catch = catch_thousands*1000)
+head(catch_clean)</code></pre>
+<pre><code>##   Region Year species catch_thousands
+## 1    SSE 1886 Chinook               0
+## 2    SSE 1887 Chinook               0
+## 3    SSE 1888 Chinook               0
+## 4    SSE 1889 Chinook               0
+## 5    SSE 1890 Chinook               0
+## 6    SSE 1891 Chinook               0</code></pre>
+<pre class="r"><code>test_catch&lt;-as.integer(catch_clean$catch_thousands)</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>i&lt;-which(is.na(test_catch) == T)
+
+catch_clean[i,]</code></pre>
+<pre><code>##     Region Year species catch_thousands
+## 401    GSE 1955 Chinook               I</code></pre>
 </div>
 <div id="split-apply-combine" class="section level1">
 <h1>Split-Apply-Combine</h1>

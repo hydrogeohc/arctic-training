@@ -24,10 +24,9 @@ to call a function from a specific package 'package_name::function_name(...)'
 Read in data file
 
 ```{r}
-
-catch<- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", method = "libcurl"),
+catch_df<- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", method = "libcurl"),
                     stringsAsFactors = FALSE)
-head(catch)
+head(catch_df)
 ```
 
 ctrl+shift+M %>% pipe opearator
@@ -35,7 +34,7 @@ ctrl+shift+M %>% pipe opearator
 *Remove marginal sum and note column
 *Move from wide to long format
 ```{r}
-catch_long<-catch %>% 
+catch_long<-catch_df %>% 
   #negative value remove columns
   select(-All,-notesRegCode) %>% 
   gather(key="species",value = "catch",-Year,-Region)
@@ -44,6 +43,31 @@ head(catch_long)
 
 
 ```
+
+
+
+
+
+
+```{r}
+catch_clean<-catch_long %>% 
+  rename(catch_thousands=catch) #%>% 
+  #mutate(catch = catch_thousands*1000)
+head(catch_clean)
+
+```
+
+```{r}
+
+
+test_catch<-as.integer(catch_clean$catch_thousands)
+
+i<-which(is.na(test_catch) == T)
+
+catch_clean[i,]
+
+```
+
 
 #Split-Apply-Combine
 
