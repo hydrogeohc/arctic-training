@@ -44,21 +44,24 @@ head(catch_long)
 
 ```
 
-
-
-
+*erroneous value due to OCR issue  change "I" to one
+*crate catch column in correct units
 
 
 ```{r}
 catch_clean<-catch_long %>% 
-  rename(catch_thousands=catch) #%>% 
-  #mutate(catch = catch_thousands*1000)
-head(catch_clean)
+  rename(catch_thousands=catch) %>%
+  mutate(catch_thousands = ifelse(catch_thousands =="I","1",catch_thousands)) %>% 
+  mutate(catch_thousands = as.integer(catch_thousands))%>% 
+  mutate(catch = catch_thousands*as.integer(1000))
+
+tail(catch_clean)
 
 ```
 
-```{r}
+```{r,eval=FALSE,echo=FALSE}
 
+# I use this code to find the bad value
 
 test_catch<-as.integer(catch_clean$catch_thousands)
 
@@ -71,8 +74,72 @@ catch_clean[i,]
 
 #Split-Apply-Combine
 
+Calculate total catch by region
 
+```{r}
 
+catch_total<-catch_clean %>% 
+  group_by(Region, Year) %>% 
+  summarize(catch_region=sum(catch),
+            n_obs=n())# # of rows went in the sume of catch
+
+catch_total
+
+```
+
+```{r}
+catch_matt<-catch_clean %>% 
+  group_by(species,Year) %>% 
+  summarize(catch_mean=mean(catch), # calculation mean
+            catch_sd=sd(catch),
+            catch_n=n())# total_obs per group
+
+head(catch_matt)
+```
+
+Filter for chinook salmon
+
+```{r}
+catch_chinook<-catch_clean %>% 
+  #filter(species=="Chinook"| species=="Chum")
+  filter(species=="Chinook" & Region =="SSE" & Year>1990) %>% 
+  arrange(-Year)
+
+head(catch_chinook)
+
+```
 
 
 #Joins
+
+Read in region definitions files
+
+```{r}
+region_defs <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1", method = "libcurl"),
+                        stringsAsFactors = FALSE)
+
+
+
+head(region_defs)
+
+```
+
+Clean up the input data
+
+```{r}
+region_clean<-region_defs %>% 
+  select(code,mgmtArea) %>% 
+  rename(Region=code)
+
+head(region_clean)
+```
+
+```{r}
+catch_joined<- left_join(catch_clean,region_clean)
+                         #by=c("Region"="code")
+
+head(catch_joined)
+  
+```
+
+
