@@ -208,6 +208,21 @@ head(catch)</code></pre>
 ## 4    SSE 1889       0     182   11   92    0 285             
 ## 5    SSE 1890       0     251   42    0    0 292             
 ## 6    SSE 1891       0     274   24    0    0 298</code></pre>
+<p>ctrl+shift+M %&gt;% pipe opearator</p>
+<p><em>Remove marginal sum and note column </em>Move from wide to long format</p>
+<pre class="r"><code>catch_long&lt;-catch %&gt;% 
+  #negative value remove columns
+  select(-All,-notesRegCode) %&gt;% 
+  gather(key=&quot;species&quot;,value = &quot;catch&quot;,-Year,-Region)
+
+head(catch_long)</code></pre>
+<pre><code>##   Region Year species catch
+## 1    SSE 1886 Chinook     0
+## 2    SSE 1887 Chinook     0
+## 3    SSE 1888 Chinook     0
+## 4    SSE 1889 Chinook     0
+## 5    SSE 1890 Chinook     0
+## 6    SSE 1891 Chinook     0</code></pre>
 </div>
 <div id="split-apply-combine" class="section level1">
 <h1>Split-Apply-Combine</h1>

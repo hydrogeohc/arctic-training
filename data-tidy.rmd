@@ -30,8 +30,23 @@ catch<- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.3
 head(catch)
 ```
 
+ctrl+shift+M %>% pipe opearator
+
+*Remove marginal sum and note column
+*Move from wide to long format
+```{r}
+catch_long<-catch %>% 
+  #negative value remove columns
+  select(-All,-notesRegCode) %>% 
+  gather(key="species",value = "catch",-Year,-Region)
+
+head(catch_long)
+
+
+```
 
 #Split-Apply-Combine
+
 
 
 
