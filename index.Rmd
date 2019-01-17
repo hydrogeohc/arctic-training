@@ -108,7 +108,7 @@ plot_name<-ggplot(annual_esc, aes(x = year, y = escapment, color = Species)) +
 
 plot_name
 
-ggsave("region_escapment.png",
+ggsave("figures/region_escapment.png",
        plot=plot_name,
        height=10,
        width=8,
