@@ -9,22 +9,137 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Load packages
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r,warning=F,message=F,echo=F}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(DT)
+library(leaflet)
 ```
 
-## Including Plots
+#Data Tidying
 
-You can also embed plots, for example:
+Read in data from Alaska Department of Fish and Game, Division of Commercial Fisheries. 2017. Daily salmon escapement counts from the OceanAK database, Alaska, 1921-2017. Knowledge Network for Biocomplexity. doi:10.5063/F1S46Q6M. 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+
+```{r,echo=F,results=F}
+esc<-read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Af119a05b-bbe7-4aea-93c6-85434dcb1c5e",method = "libcurl"),stringsAsFactors = F)
+
+head(esc)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Calculate annual, regional total escapement by species
+
+* separate the date into year -month -day
+* 'group_by' 'summarize' to calculate the sum over unique region-year-species combinations
+* 'filter' for salmon species
+
+```{r}
+annual_esc<-esc %>% 
+  separate(sampleDate,into=c("year","month","day"),sep="-") %>% 
+  mutate(year=as.numeric(year)) %>% 
+  group_by(SASAP.Region,Species,year) %>% 
+  summarize(escapment=sum(DailyCount)) %>% 
+  filter(Species %in% c("Chinook","Sockeye","Pink","Chum","Coho") ) # filter any species that are in
+
+
+
+
+
+
+```
+
+
+```{r,echo=F}
+#echo=F hide code chunk
+datatable(annual_esc)
+
+```
+
+
+# Static Plots
+
+
+```{r}
+my_theme<-  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5)) # this is the theme object
+```
+
+
+
+```{r}
+ggplot(data=annual_esc,mapping = aes(x=Species,y=escapment,fill=SASAP.Region))+
+  geom_col()+
+  my_theme#fill=blue inside the geom column
+
+
+```
+
+
+time-series plot of Kodiak escapment by species
+
+```{r}
+
+
+ggplot(data=filter(annual_esc,SASAP.Region=="Kodiak"),
+       aes(x=year,y=escapment,color=Species))+
+  geom_line()+# fill for bar and column plot
+  geom_point()+
+  ylab("Escapement (number of fish)")+
+  ggtitle("Kodiak Salmon Escapement")+
+  my_theme
+
+```
+
+Plot timeseries of escapement by species for all regions
+
+
+```{r,fig.height=10,fig.width=8}
+plot_name<-ggplot(annual_esc, aes(x = year, y = escapment, color = Species)) + 
+    geom_line() +
+    geom_point() +
+    facet_wrap(~SASAP.Region, scales = "free_y",ncol=2) + #'free_y' make y axes different, facet_wrap (every plot inside is the same plot)
+    ylab("Escapement") +
+    my_theme
+
+plot_name
+
+ggsave("region_escapment.png",
+       plot=plot_name,
+       height=10,
+       width=8,
+       units="in")
+
+```
+
+
+
+
+# Interactive map
+
+
+```{r}
+locations <- esc %>% 
+  distinct(Location, Latitude, Longitude) %>% 
+  drop_na()
+
+```
+
+
+```{r}
+datatable(locations)
+```
+
+
+
+
+```{r,echo=F}
+leaflet(locations) %>% 
+  addTiles() %>% 
+  addMarkers(~ Longitude, ~ Latitude, popup = ~ Location)
+```
+
