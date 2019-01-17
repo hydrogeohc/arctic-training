@@ -116,6 +116,11 @@ ggsave("region_escapment.png",
 
 ```
 
+```{r}
+write.csv(annual_esc,
+          "derived_data/annual_escapement.csv",
+          row.names = F)
+```
 
 
 
