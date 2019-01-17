@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)# trun off code echo
 ```
 
 # Load packages
@@ -98,7 +98,7 @@ ggplot(data=filter(annual_esc,SASAP.Region=="Kodiak"),
 Plot timeseries of escapement by species for all regions
 
 
-```{r,fig.height=10,fig.width=8}
+```{r,fig.height=10,fig.width=8,echo=F}
 plot_name<-ggplot(annual_esc, aes(x = year, y = escapment, color = Species)) + 
     geom_line() +
     geom_point() +
@@ -126,11 +126,14 @@ write.csv(annual_esc,
 
 # Interactive map
 
+Make a map using leaflet
+
+*find unique location with lat/lon values
 
 ```{r}
 locations <- esc %>% 
   distinct(Location, Latitude, Longitude) %>% 
-  drop_na()
+  drop_na() # drop rows contain NA for any column in your dataset
 
 ```
 
@@ -139,12 +142,11 @@ locations <- esc %>%
 datatable(locations)
 ```
 
-
-
+Create our interactive map 
 
 ```{r,echo=F}
-leaflet(locations) %>% 
-  addTiles() %>% 
+leaflet(locations) %>% #leaflet using pipe as the add sign in ggplot
+  addTiles() %>% # add open source map tile in the background
   addMarkers(~ Longitude, ~ Latitude, popup = ~ Location)
 ```
 
