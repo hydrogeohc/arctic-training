@@ -2,7 +2,12 @@
 title: "Reproducible Papers with RMarkdown.Rmd"
 author: ["Ying-Jung Deweese,tt@ut.edu"]
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  word_document: default
+  html_document:
+    fig_caption: yes
+  pdf_document:
+    fig_caption: yes
 bibliography: references.bib
 ---
 
