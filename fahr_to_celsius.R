@@ -4,7 +4,7 @@ fahr_to_celsius <- function(fahr) {
   return(celsius)
 }
 
-
+#Formula:9/5 of celsius plus 32
 celsius_to_fahr<-function(celsius){
   fahr<-(celsius*9/5)+32
   return(fahr)
