@@ -88,7 +88,7 @@ head(salinity_data_long)
 #Plots
 
 ```{r}
-ggplot(salinity_data, aes(x = time, y = depth, fill =salinity)) +
+ggplot(salinity_data_long, aes(x = time, y = depth, fill =salinity)) +
     geom_raster() +
     theme_bw() +
     ylab("Depth (m)") +
@@ -97,7 +97,7 @@ ggplot(salinity_data, aes(x = time, y = depth, fill =salinity)) +
 ```
 
 ```{r}
-ggplot(salinity_data, aes(x = salinity,
+ggplot(salinity_data_long, aes(x = salinity,
                           y = depth,
                           group = time,
                           color = time)) +
