@@ -1,0 +1,111 @@
+---
+title: "Untitled"
+author: "Ying-Jung Deweese"
+date: "January 18, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r,warning=F,message=F}
+library(ncdf4)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+
+
+#Read in data from a file
+
+Open the netCDF file
+
+```{r}
+
+nc <- nc_open("data/WG2013CTD.nc")
+```
+
+```{r}
+print(nc)
+```
+
+```{r}
+vars <- attributes(nc$var)$names
+vars
+```
+
+Figure out the dimension of the netCDF file
+
+```{r}
+dims<-attributes(nc$dim)$names
+dims
+```
+
+
+```{r}
+salinity<-ncvar_get(nc,"sal")
+time <- ncvar_get(nc, "time")
+depth <- ncvar_get(nc, "z")
+```
+
+
+# Reformat the ouput
+
+Change the time format from MATLAB datetime number to a POSIXct number 
+
+```{r}
+time <- as.POSIXct((time + 719529)*86400, origin = "1970-01-01", tz = "UTC")
+```
+
+
+
+Create the matrix into a dataframe
+```{r}
+salinity_data <- as.data.frame(salinity) 
+```
+
+
+Assign column names to depth values
+```{r}
+names(salinity_data) <- as.character(depth)
+```
+
+Reshape the data and add time
+
+```{r}
+salinity_data_long <- salinity_data %>% 
+    mutate(time = time) %>% 
+    gather(key = "depth", value = "salinity", -time) %>%  #"-time" leave out the time column
+    mutate(depth = as.numeric(depth)) %>% 
+    arrange(time)
+
+head(salinity_data_long)
+```
+
+
+#Plots
+
+```{r}
+ggplot(salinity_data, aes(x = time, y = depth, fill = salinity)) +
+    geom_raster() +
+    theme_bw() +
+    ylab("Depth (m)") +
+    xlab("") +
+    scale_fill_continuous(low = "gray", high = "red", name = "Salinity (psu)")
+```
+
+```{r}
+ggplot(salinity_data, aes(x = salinity,
+                          y = depth,
+                          group = time,
+                          color = time)) +
+    geom_line(size = .1) +
+    scale_y_reverse() + # flip the y axis
+    theme_bw() +
+    ylab("Depth (m)") +
+    xlab("Salinity (psu)") +
+    theme(legend.title = element_blank())
+```
+
