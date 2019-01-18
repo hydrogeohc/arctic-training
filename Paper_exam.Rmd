@@ -116,13 +116,25 @@ ggplot(diamonds, aes(x=carat,y=price, color=clarity))+
   labs(x="Carats",y="Price")
 
 ```
+But the model was even better:
 
+```{r themodel, echo=FALSE}
+mod <- lm(price ~ carat, diamonds)
+kable(tidy(mod), digits = 2, caption = cap_themodel) # kable printed table
+```
 
-
+We were delighted to find that the slope parameter was `r round(mod$coefficients["carat"][[1]], 2)`.
 
 #Discussion
 
-#Conclusion
+This was just a quick demonstration of a reproducible paper that combined text, analysis, figures, tables, and citations into multiple output formats (HTML, PDF).
+Hopefully you found it useful.
+
+A lot of people are using RMarkdown these days so there are tons of resources online but here are a few choice ones specifically about making papers:
+
+- [http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
+- [http://svmiller.com/blog/2016/02/svm-r-markdown-manuscript/](http://svmiller.com/blog/2016/02/svm-r-markdown-manuscript/)
+- [http://www.petrkeil.com/?p=2401](http://www.petrkeil.com/?p=2401)
 
 #References
 
